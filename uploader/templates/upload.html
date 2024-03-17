@@ -1,0 +1,93 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>chatESG | Home</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/index.css' %}">
+    <script src="{% static 'js/progress.js' %}"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <a href="/" class="logo-wrapper">
+                <img src="{% static 'assets/chatESG_logo.png' %}" alt="chatESG logo">
+                <h2 class="anta-regular">chatESG</h2>
+            </a>
+            <ul>
+                <li style="border-top: 3px solid #7d2ac0;
+                margin-bottom: 10px; border-bottom: 3px solid #7d2ac0">
+                    <a style="color: #fff;" href="/">
+                        <i class="fas fa-add"></i> 
+                        New Chat
+                    </a>
+                </li>
+            </ul>
+            <ul class="history-list">
+                {% for history in allChatHistories %}
+                <li>
+                    <a href="{% url 'chatView' history.pk %}">
+                        <i class="far fa-comment-alt chat-icon"></i>
+                        {{history.name}}
+                    </a>
+                </li>
+                {% empty %}
+                <div style="display: flex; justify-content: center; 
+                align-items: center; flex-direction: column; margin-top: 14px;">
+                    <img class="no_result" src="{% static 'assets/no results.svg' %}" />
+                    <span style="color: #d1d1d1b0; margin-top: 8px;">No chat history</span>
+                </div>
+                {% endfor %}
+            </ul>
+            <div class="sidebar-footer">
+                <ul>
+                    <li style="border-top: 1px solid #7d2ac0;"><a href="/upload-questionaire"><i class="fas fa-cloud-upload-alt"></i>Upload Questionaire</a></li>
+                    <li style="border-top: 1px solid #7d2ac0;background-color: #594f8d;">
+                        <a style="color: #fff;" href="/upload">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            Upload Docs
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="upload-container">
+            <div class="wrapper">
+                <header>Upload Documents</header>
+                <form id="upload-form" action="/upload">
+                    {% csrf_token %}
+                    <label style="font-size: 12px; margin-top: 7px; color: #a5a5a5;" for="reportYear">Report Year</label>
+                    <select style="border: none; outline: none; margin-bottom: 7px;
+                    color: #616161; background: #fff;" name="reportYear" id="reportYear">
+                        <option value="2016">2016</option>
+                        <option value="2017">2017</option>
+                        <option value="2018">2018</option>
+                        <option value="2019">2019</option>
+                        <option value="2020">2020</option>
+                        <option value="2021">2021</option>
+                        <option value="2022">2022</option>
+                        <option value="2023">2023</option>
+                        <option value="2024">2024</option>
+                        <option value="2025">2025</option>
+                    </select>
+                    <input class="file-input" type="file" name="file" multiple hidden>
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>Browse File to Upload</p>
+                </form>
+                <section class="progress-area"></section>
+                <section class="uploaded-area"></section>
+                <div class="loader-wrap">
+                    <img src="{% static 'assets/loader.svg' %}" alt="loader"/>
+                    <span>Processing document...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="{% static 'js/progress.js' %}"></script>
+</body>
+</html>

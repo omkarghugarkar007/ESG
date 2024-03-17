@@ -1,0 +1,81 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>chatESG | Home</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://cdn.rawgit.com/jasondavies/d3-cloud/v1.2.0/build/d3.layout.cloud.js"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/index.css' %}">
+    <script src="{% static 'js/progress.js' %}"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <a href="/" class="logo-wrapper">
+                <img src="{% static 'assets/chatESG_logo.png' %}" alt="chatESG logo">
+                <h2 class="anta-regular">chatESG</h2>
+            </a>
+            <ul>
+                <li style="border-top: 3px solid #7d2ac0;
+                margin-bottom: 10px; border-bottom: 3px solid #7d2ac0">
+                    <a style="color: #fff;" href="/">
+                        <i class="fas fa-add"></i> 
+                        New Chat
+                    </a>
+                </li>
+            </ul>
+            <ul class="history-list">
+                {% for history in allChatHistories %}
+                <li>
+                    <a href="{% url 'chatView' history.pk %}">
+                        <i class="far fa-comment-alt chat-icon"></i>
+                        {{history.name}}
+                    </a>
+                </li>
+                {% empty %}
+                <div style="display: flex; justify-content: center; 
+                align-items: center; flex-direction: column; margin-top: 14px;">
+                    <img class="no_result" src="{% static 'assets/no results.svg' %}" />
+                    <span style="color: #d1d1d1b0; margin-top: 8px;">No chat history</span>
+                </div>
+                {% endfor %}
+            </ul>
+            <div class="sidebar-footer">
+                <ul>
+                    <li style="border-top: 1px solid #7d2ac0;"><a href="/upload-questionaire"><i class="fas fa-cloud-upload-alt"></i>Upload Questionaire</a></li>
+                    <li style="border-top: 1px solid #7d2ac0;"><a href="/upload"><i class="fas fa-cloud-upload-alt"></i>Upload Docs</a></li>
+                </ul>
+            </div>
+        </div>
+        <form id="deleteForm" action="/delete-all" method="post">
+            <input type="submit" id="submit-form" hidden />
+        </form>
+        <div class="wordcloud-wrap">
+            <div id="wordcloud"></div>
+        </div>
+        <div class="bottom-bar">
+            <div id="loader-wrap">
+                <div class="loader" id="loader">
+                    <img src="{% static 'assets/typing-loader.gif' %}" />
+                </div>
+                <span class="loader-text">Generating response...</span>
+            </div>
+            <form method="POST" action="" class="chat-input">
+                {% csrf_token %}
+                <input name="question" type="text" placeholder="Type a message..." />
+                <button id="submit-button" type="submit">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+    <script src="{% static 'js/index.js' %}"></script>
+    <script src="{% static 'js/progress.js' %}"></script>
+</body>
+</html>

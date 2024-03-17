@@ -1,0 +1,254 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style type="text/css">
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+            list-style: none;
+            text-decoration: none;
+        }
+
+        #content-body {
+            height: 91vh;
+            background-color: white;
+            text-align: center;
+            flex: 1;
+            overflow-y: auto;
+            box-shadow: 0px 0px 5px #cfcfcf;
+        }
+
+        #content-body::-webkit-scrollbar {
+            width: 0px;
+            background: transparent; /* make scrollbar transparent */
+        }
+        
+        #messages {
+            padding-bottom: 5px;
+        }
+        
+        .message-div {
+            /* display: flex; */
+            margin: 5px auto;
+            max-width: 800px;
+            justify-content: start;
+        }
+        
+        .user-message {
+            padding: 10px;
+            padding-bottom: 0px;
+        }
+        
+        .gpt-message {
+            background: #f3f2f7;
+            padding: 10px;
+        }
+        
+        .message-profile-pic, .message-logo{
+            margin-right: 20px;
+        }
+
+        .message-profile-pic img {
+            border-radius: 4px;
+        }
+
+        .message-logo img {
+            border-radius: 3px;
+            background: #4b4276;
+            padding: 4px;
+        }
+
+        .message-content {
+            text-align: start;
+            margin-top: 5px;
+            color: #575757;
+        }
+        
+        .message-content p {
+            margin-bottom: 10px;
+            color: #575757;
+        }
+
+        .print-btn {
+            outline: none;
+            border: none;
+            background: #9646cc;
+            padding: 10px 12px;
+            border-radius: 5px;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.4s ease;
+            font-size: 17px;
+            margin-top: 32px;
+        }
+
+        .print-btn:hover {
+            background: #7916bb;
+        }
+        
+        @media screen and (max-width: 800px) {
+            nav {
+                display: flex;
+            }
+            #close {
+                display: block;
+            }
+            #sidenav {
+                position: fixed;
+                left: -400px;
+            }
+            #content-body {
+                margin: 50px 0 0 0;
+            }
+        }
+
+        .rail-container {
+            width: 70%;
+            padding-top: 6px;
+            cursor: pointer;
+        }
+        .rail::-webkit-scrollbar {
+            width: 0px;
+            background: transparent; /* make scrollbar transparent */
+        }
+        .rail {
+            overflow-x: auto;
+            padding-bottom: 0px;
+            scroll-behavior: smooth;
+            width: 80%;
+            white-space: nowrap;
+        }
+        .tag {
+            background: #f4e3f7;
+            border-radius: 4px;
+            padding: 3px 8px 4px;
+            margin: 5px 2px;
+            color: #682892;
+            user-select: none;
+            border: 1px solid #e3ebf7;
+            transition-duration: 0.25s;
+            white-space: nowrap;
+            font-size: 10px;
+        }
+        .tag:hover {
+            background: #eddcf0;
+        }
+        .tag:active {
+            background: #eddcf0;
+        }
+
+        .tag-rail {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .canvas-wrap {
+            margin: 10px 0px;
+        }
+
+        @media print {
+            .no_print {
+                display: none;
+            }
+            .pagebreak { 
+                page-break-before: always; 
+            }
+        }
+    </style>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>chatESG | Home</title>
+    <script src="{% static 'js/progress.js' %}"></script>
+</head>
+<body>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        var response = JSON.parse(document.getElementById('response').textContent);
+        for (var i = 0; i <= response.length; i++) {
+        if (response[i].data.length !== 0) {
+            var chartId = `myChart${i+1}`;
+            var ctx = document.getElementById(chartId).getContext('2d');
+            var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: response[i].labels,
+                    datasets: [{
+                        label: 'Happiness',
+                        data: response[i].data,
+                        backgroundColor: [
+                        '#4b427669',
+                        '#4b427669',
+                        '#4b427669',
+                        '#4b427669',
+                        '#4b427669',
+                        '#4b427669'
+                        ]
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+        }
+    </script>
+    <div class="container">
+        {{ response|json_script:"response" }}
+        <div id="content-body" style="height: 100%;">
+            {% for rsp in response %}
+            <div id="messages">
+                <div class="user-message message">
+                    <div class="message-div" style="display: flex;">
+                        <div class="message-content">
+                            <p>{{rsp.question}}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="gpt-message message">
+                <div class="message-div">
+                    <div style="display: flex;">
+                        <div class="message-content">
+                            {{rsp.paragraph}}
+                            {% if rsp.data %}
+                            <div class="canvas-wrap">
+                                <canvas id="myChart{{forloop.counter}}"></canvas>
+                            </div>
+                            {% endif %}
+                            <div class="tag-rail">
+                                <div class="rail-container">
+                                    <div class="rail" id="rail">
+                                        {% for citation in rsp.citations %}
+                                            <a href="{{citation.1}}" class="tag">{{citation.0}}</a>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% if forloop.counter|divisibleby:3 %}
+            <div class="pagebreak"> </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+        <div class="no_print" style="text-align: center;">
+            <button class="print-btn">Save PDF</button>
+        </div>
+    </div>
+    <script src="{% static 'js/progress.js' %}"></script>
+</body>
+</html>
